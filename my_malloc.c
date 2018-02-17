@@ -238,7 +238,7 @@ void my_free(void* free_ptr,char* file_name, int line_no)
 		*curr_meta_ptr = getMeta(getSize(*curr_meta_ptr), FREE);
 	}
 }
-
+/*
 int main()
 {
 	int* ptr = (int*)my_malloc(50, "malloc1", 32);
@@ -251,4 +251,4 @@ int main()
 	printFree();
 
 	return 0;
-}
+}*/
