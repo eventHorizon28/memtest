@@ -176,6 +176,8 @@ void my_free(void* free_ptr,char* file_name, int line_no)
 	int* next_meta_ptr;
 	int* prev_meta_ptr;
 
+	printf("%s\n", file_name);
+
 	if(free_ptr == NULL)
 	{
 		printf("NULL pointer exception at line %d, in file %s\n", line_no, file_name);
@@ -216,15 +218,18 @@ void my_free(void* free_ptr,char* file_name, int line_no)
 	prev_meta_ptr = (int*)myblock;
 	
 	//increment the prev_meta_ptr until it reaches the block right before curr_meta_ptr
-	while(((void*)prev_meta_ptr+getSize(*prev_meta_ptr)+4) != curr_meta_ptr)
+	if(prev_meta_ptr != curr_meta_ptr)
 	{
-		prev_meta_ptr = (void*)prev_meta_ptr+getSize(*prev_meta_ptr)+4;
+		while(((void*)prev_meta_ptr+getSize(*prev_meta_ptr)+4) != curr_meta_ptr)
+		{
+			prev_meta_ptr = (void*)prev_meta_ptr+getSize(*prev_meta_ptr)+4;
+		}	
 	}
 	//if it is free merge it with the curr_meta_ptr
 	if(!isUsed(*prev_meta_ptr) && verified(*prev_meta_ptr))
 	{
 		*prev_meta_ptr = getMeta(getSize(*curr_meta_ptr)+getSize(*prev_meta_ptr)+4, FREE);
-		curr_meta_ptr = 0;
+		*curr_meta_ptr = 0;
 	}
 
 	//if curr_meta_ptr is the only free, then just change the isUsed bit to 0
@@ -240,7 +245,9 @@ int main()
 	printFree();
 	char* ptr2 = (char*)my_malloc(30, "malloc2", 34);
 	printFree();
-	my_free(ptr2, "free1", 195);
+	my_free(ptr, "freeptr1", 195);
+	printFree();
+	my_free(ptr2, "free ptr2", 197);
 	printFree();
 
 	return 0;
