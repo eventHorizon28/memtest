@@ -11,7 +11,7 @@
 
 char myblock[5000];
 
-void printBinary(int num, int num_bits)
+/*void printBinary(int num, int num_bits)
 {
 	int i;
 	unsigned int masker = (unsigned int)1<<num_bits;
@@ -25,7 +25,7 @@ void printBinary(int num, int num_bits)
 		//printf("n = %d\n", n);
 	}
 
-}
+}*/
 int verified(int num)
 {
 	if(((unsigned int)num & CODE_BITS) == CODE)
@@ -196,6 +196,11 @@ void my_free(void* free_ptr,char* file_name, int line_no)
 		printf("trying to free an invalid pointer at line %d, in file %s", line_no, file_name);
 		return;
 	}
+	else
+	{
+		if(!isUsed(*curr_meta_ptr))
+			return;
+	}
 
 	//if its all good!
 	//go forward to check if that block free
@@ -224,13 +229,15 @@ void my_free(void* free_ptr,char* file_name, int line_no)
 		{
 			prev_meta_ptr = (void*)prev_meta_ptr+getSize(*prev_meta_ptr)+4;
 		}	
+
+		//if it is free merge it with the curr_meta_ptr
+		if(!isUsed(*prev_meta_ptr) && verified(*prev_meta_ptr))
+		{
+			*prev_meta_ptr = getMeta(getSize(*curr_meta_ptr)+getSize(*prev_meta_ptr)+4, FREE);
+			*curr_meta_ptr = 0;
+		}
 	}
-	//if it is free merge it with the curr_meta_ptr
-	if(!isUsed(*prev_meta_ptr) && verified(*prev_meta_ptr))
-	{
-		*prev_meta_ptr = getMeta(getSize(*curr_meta_ptr)+getSize(*prev_meta_ptr)+4, FREE);
-		*curr_meta_ptr = 0;
-	}
+
 
 	//if curr_meta_ptr is the only free, then just change the isUsed bit to 0
 	if(verified(*curr_meta_ptr))
@@ -238,17 +245,20 @@ void my_free(void* free_ptr,char* file_name, int line_no)
 		*curr_meta_ptr = getMeta(getSize(*curr_meta_ptr), FREE);
 	}
 }
-/*
-int main()
+
+/*int main()
 {
-	int* ptr = (int*)my_malloc(50, "malloc1", 32);
-	printFree();
-	char* ptr2 = (char*)my_malloc(30, "malloc2", 34);
-	printFree();
-	my_free(ptr, "freeptr1", 195);
-	printFree();
-	my_free(ptr2, "free ptr2", 197);
-	printFree();
+	int i = 0;
+	char * ptr;
+	for(i = 0; i<150; i++)
+	{
+		ptr = (char*)my_malloc(1, "malloc2", 34);
+		printFree();
+		my_free(ptr, "freeptr1", 195);
+		printFree();
+		my_free(ptr, "free again", 197);
+	}
 
 	return 0;
-}*/
+}
+*/
