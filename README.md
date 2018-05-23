@@ -36,16 +36,3 @@ printf("x at line %d, in file %s", line_no, file_name);
 Built With:
 
 vim-editor used
-
-
-
-
-Contributors/Authors
-
-Kamarudeen Ayankunbi
-
-Kshitij Bafna
-
-Acknowledgments
-
-Professor John-Austen
